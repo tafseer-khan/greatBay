@@ -35,7 +35,41 @@ const bid = () => {
       ]);
     });
   });
-    // connection.end();
+  // connection.end();
+};
+
+const post = () => {
+  inquirer.prompt([
+    {
+      type: 'input',
+      name: 'itemName',
+      message: 'What is your item?',
+    },
+    {
+      type: 'input',
+      name: 'itemCategory',
+      message: 'What category would your item fall under?'
+    },
+    {
+      type: 'input',
+      name: 'itemStart',
+      message: 'What is your starting price?'
+    }
+  ]).then((response) => {
+    connection.query('INSERT INTO items SET ?',
+      {
+        category: response.itemCategory,
+        item_name: response.itemName,
+        starting_price: response.itemStart,
+      },
+      (err, res) => {
+        if (err) throw err;
+      }
+
+    );
+    console.log('You made your post!');
+    start();
+  })
 };
 
 const exit = () => {
@@ -72,6 +106,5 @@ connection.connect((err) => {
   // console.log(`connected as id ${connection.threadId}`);
   start();
 });
-
 
 
