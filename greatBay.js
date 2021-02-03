@@ -13,30 +13,38 @@ const connection = mysql.createConnection({
   user: 'root',
 
   // Be sure to update with your own MySQL password!
-  password: 'M@trixt15',
+  password: 'AzAq69SxSw',
   database: 'biditems',
 });
 
 const bid = () => {
-  connection.query('SELECT * FROM items', (err, res) => {
-    // console.log(res);
-    if (err) throw err;
-    let bidlist = ['...nevermind'];
-    res.forEach(({ item_name }) => {
-      bidlist.push(`${item_name}`);
-      // console.log("bidlist");
-      inquirer.prompt([
-        {
-          type: "list",
-          name: "bidoptions",
-          message: "Which Item would you like to bid on?",
-          choices: bidlist
-        }
-      ]);
-    });
-  });
-  // connection.end();
-};
+  const setItemArray = (data) => { 
+    connection.query('SELECT * FROM items', (err, res) => {
+      // console.log(res);
+      if (err) throw err;
+      let bidlist = ['...nevermind'];
+      res.forEach(({ item_name }) => {
+        bidlist.push(`${item_name}`);
+      })
+    })}
+      console.log(bidlist)
+  const promptItems = (bidlist) => {
+    inquirer.prompt([
+      {
+        type: "list",
+        name: "bidoptions",
+        message: "Which Item would you like to bid on?",
+        choices: bidlist
+      }
+    ])
+  }
+}
+
+
+  //   // connection.end();
+  // };
+
+
 
 const post = () => {
   inquirer.prompt([
