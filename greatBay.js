@@ -2,7 +2,6 @@ const mysql = require('mysql');
 const inquirer = require("inquirer");
 const path = require("path");
 const fs = require("fs");
-const { exit } = require('process');
 
 const connection = mysql.createConnection({
   host: 'localhost',
@@ -18,8 +17,65 @@ const connection = mysql.createConnection({
   database: 'biditems',
 });
 
+const bid = () => {
+  connection.query('SELECT * FROM items', (err, res) => {
+    // console.log(res);
+    if (err) throw err;
+    let bidlist = ['...nevermind'];
+    res.forEach(({ item_name }) => {
+      bidlist.push(`${item_name}`);
+      // console.log("bidlist");
+      inquirer.prompt([
+        {
+          type: "list",
+          name: "bidoptions",
+          message: "Which Item would you like to bid on?",
+          choices: bidlist
+        }
+      ]);
+    });
+  });
+  // connection.end();
+};
 
+const post = () => {
+  inquirer.prompt([
+    {
+      type: 'input',
+      name: 'itemName',
+      message: 'What is your item?',
+    },
+    {
+      type: 'input',
+      name: 'itemCategory',
+      message: 'What category would your item fall under?'
+    },
+    {
+      type: 'input',
+      name: 'itemStart',
+      message: 'What is your starting price?'
+    }
+  ]).then((response) => {
+    connection.query('INSERT INTO items SET ?',
+      {
+        category: response.itemCategory,
+        item_name: response.itemName,
+        starting_price: response.itemStart,
+      },
+      (err, res) => {
+        if (err) throw err;
+      }
 
+    );
+    console.log('You made your post!');
+    start();
+  })
+};
+
+const exit = () => {
+  console.log('See ya, then!');
+  connection.end();
+};
 
 function start() {
   inquirer.prompt([
@@ -43,31 +99,12 @@ function start() {
         break;
     }
   })
-}
+};
 
-const bid = () => {
-  connection.query('SELECT * FROM bidItems', (err, res) => {
-    if (err) throw err;
-    let bidlist = [];
-    res.forEach(({ item_name }) => {
-      bidlist.push(`${item_name}`)
-    });
-  }).then(  
-    inquirer.prompt([
-    {
-      type: list,
-      name: "bidoptions",
-      message: "Which Item would you like to bid on?",
-      choices: bidlist
-
-    }]))
-    // connection.end();
-}
-start();
 connection.connect((err) => {
   if (err) throw err;
-  console.log(`connected as id ${connection.threadId}`);
+  // console.log(`connected as id ${connection.threadId}`);
+  start();
 });
-
 
 
